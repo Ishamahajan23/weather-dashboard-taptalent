@@ -56,7 +56,6 @@ const SearchBar = ({ onCitySelect }) => {
     if (onCitySelect) {
       onCitySelect(city.name);
     } else {
-      // Add to favorites if no specific handler provided
       dispatch(addFavorite(city.name));
     }
   };

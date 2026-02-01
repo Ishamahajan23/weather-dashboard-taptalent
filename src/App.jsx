@@ -1,15 +1,50 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase/config";
+import { setUser, signOut } from "./features/authSlice";
+import { loadAllUserData } from "./firebase/firestore";
+import { loadFavoritesFromCloud } from "./features/favoritesSlice";
+import { loadSettingsFromCloud } from "./features/settingsSlice";
 import Dashboard from "./page/Dashboard";
 import CityDetails from "./page/CityDetails";
 import Settings from "./page/Settings";
 import Navbar from "./components/Navbar";
 
 function App() {
+  const dispatch = useDispatch();
   const { theme } = useSelector((state) => state.settings);
   const isDark = theme === "dark";
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        };
+        dispatch(setUser(userData));
+
+        const cloudData = await loadAllUserData(user.uid);
+        if (cloudData) {
+          if (cloudData.favorites) {
+            dispatch(loadFavoritesFromCloud(cloudData.favorites));
+          }
+          if (cloudData.settings) {
+            dispatch(loadSettingsFromCloud(cloudData.settings));
+          }
+        }
+      } else {
+        dispatch(signOut());
+      }
+    });
+
+    return () => unsubscribe();
+  }, [dispatch]);
 
   return (
     <div

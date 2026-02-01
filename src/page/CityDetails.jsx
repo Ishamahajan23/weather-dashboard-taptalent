@@ -27,8 +27,7 @@ const CityDetails = () => {
   const { cityName } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // eslint-disable-next-line no-unused-vars
-  const [coordinates, setCoordinates] = useState(null);
+  const [, setCoordinates] = useState(null);
 
   const {
     detailed: detailedWeather,
@@ -65,7 +64,6 @@ const CityDetails = () => {
     fetchData();
   }, [decodedCityName, dispatch]);
 
-  // Update current time every minute
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());
@@ -189,10 +187,8 @@ const CityDetails = () => {
   const currentWeather = cityWeatherData.current;
   const { hourly, daily } = formatChartData();
 
-  // Get the city's timezone name from the weather data
-  const cityTimezoneName = cityWeatherData.timezone_name; // e.g., "America/New_York"
+  const cityTimezoneName = cityWeatherData.timezone_name;
 
-  // Capitalize city name
   const capitalizeCity = (city) => {
     return city
       .split(" ")

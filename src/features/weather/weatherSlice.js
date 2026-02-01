@@ -54,7 +54,6 @@ const weatherSlice = createSlice({
     forceRefreshWeather: (state, action) => {
       const city = action.payload;
       if (city) {
-        // Clear cache for specific city
         if (state.current[city]) {
           state.current[city].lastUpdated = 0;
         }
@@ -62,7 +61,6 @@ const weatherSlice = createSlice({
           state.detailed[city].lastUpdated = 0;
         }
       } else {
-        // Clear all cache
         Object.keys(state.current).forEach((key) => {
           state.current[key].lastUpdated = 0;
         });

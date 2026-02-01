@@ -9,25 +9,28 @@ import {
   Moon,
   Menu,
   X,
+  User,
 } from "lucide-react";
 import { setTemperatureUnit, setTheme } from "../features/settingsSlice";
 import {
   forceRefreshWeather,
   fetchWeather,
 } from "../features/weather/weatherSlice";
+import AuthModal from "./AuthModal";
 
 const Navbar = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { temperatureUnit, theme } = useSelector((state) => state.settings);
   const { cities: favoriteCities } = useSelector((state) => state.favorites);
   const { current } = useSelector((state) => state.weather);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   const isDark = theme === "dark";
 
-  // Calculate last updated time from weather data
   const lastUpdated = useMemo(() => {
     const timestamps = Object.values(current).map((c) => c?.lastUpdated || 0);
     const latestTimestamp = timestamps.length > 0 ? Math.max(...timestamps) : 0;
@@ -46,7 +49,6 @@ const Navbar = () => {
   const toggleTemperatureUnit = () => {
     const newUnit = temperatureUnit === "C" ? "F" : "C";
     dispatch(setTemperatureUnit(newUnit));
-    // Refresh weather data with new unit
     favoriteCities.forEach((city) => {
       dispatch(forceRefreshWeather(city));
       dispatch(fetchWeather({ city, unit: newUnit }));
@@ -55,12 +57,10 @@ const Navbar = () => {
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    // Force refresh all favorite cities
     favoriteCities.forEach((city) => {
       dispatch(forceRefreshWeather(city));
       dispatch(fetchWeather({ city, unit: temperatureUnit }));
     });
-    // Stop refresh animation after 2 seconds
     setTimeout(() => setIsRefreshing(false), 2000);
   };
 
@@ -115,6 +115,40 @@ const Navbar = () => {
 
             {/* Desktop Controls */}
             <div className="hidden md:flex items-center space-x-2 lg:space-x-3">
+              {/* Auth Button */}
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className={`p-2.5 rounded-full transition-all duration-300 hover:scale-110 relative ${
+                  isAuthenticated
+                    ? isDark
+                      ? "bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/30"
+                      : "bg-green-100 hover:bg-green-200 text-green-700 border border-green-300"
+                    : isDark
+                      ? "bg-gray-800 hover:bg-gray-700 text-gray-400"
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                }`}
+                title={isAuthenticated ? "Manage account" : "Sign in to sync"}
+              >
+                {user?.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt="Profile"
+                    className="w-5 h-5 rounded-full"
+                  />
+                ) : isAuthenticated && user ? (
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                    {user.displayName?.charAt(0)?.toUpperCase() ||
+                      user.email?.charAt(0)?.toUpperCase() ||
+                      "U"}
+                  </div>
+                ) : (
+                  <User className="w-5 h-5" />
+                )}
+                {isAuthenticated && (
+                  <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                )}
+              </button>
+
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
@@ -196,6 +230,40 @@ const Navbar = () => {
 
             {/* Mobile Controls */}
             <div className="flex md:hidden items-center space-x-2">
+              {/* Auth Button - Mobile */}
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className={`p-2 rounded-full transition-all duration-300 relative ${
+                  isAuthenticated
+                    ? isDark
+                      ? "bg-green-600/20 text-green-400 border border-green-500/30"
+                      : "bg-green-100 text-green-700 border border-green-300"
+                    : isDark
+                      ? "bg-gray-800 text-gray-400"
+                      : "bg-gray-100 text-gray-600"
+                }`}
+                title={isAuthenticated ? "Account" : "Sign in"}
+              >
+                {user?.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt="Profile"
+                    className="w-5 h-5 rounded-full"
+                  />
+                ) : isAuthenticated && user ? (
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                    {user.displayName?.charAt(0)?.toUpperCase() ||
+                      user.email?.charAt(0)?.toUpperCase() ||
+                      "U"}
+                  </div>
+                ) : (
+                  <User className="w-5 h-5" />
+                )}
+                {isAuthenticated && (
+                  <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border border-white"></div>
+                )}
+              </button>
+
               {/* Theme Toggle - Mobile */}
               <button
                 onClick={toggleTheme}
@@ -337,6 +405,12 @@ const Navbar = () => {
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </>
   );
 };

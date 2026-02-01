@@ -6,7 +6,6 @@ import {
   formatTemperature,
 } from "../features/weather/weatherAPI";
 
-// Capitalize city name
 const capitalizeCity = (city) => {
   return city
     .split(" ")

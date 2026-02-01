@@ -32,7 +32,6 @@ const Dashboard = () => {
   }, [dispatch, favoriteCities, temperatureUnit]);
 
   const handleCitySelect = (cityName) => {
-    // Navigate to city details page instead of auto-adding to favorites
     navigate(`/city/${encodeURIComponent(cityName)}`);
   };
 
@@ -43,7 +42,6 @@ const Dashboard = () => {
       message: `${city.charAt(0).toUpperCase() + city.slice(1)} removed from favorites`,
       type: "info",
     });
-    // If we removed the current city, adjust the index
     if (currentIndex >= favoriteCities.length - 1 && currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     }

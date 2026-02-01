@@ -74,7 +74,8 @@ export const weatherAPI = {
             },
             weather: item.weather,
             humidity: item.main.humidity,
-            wind_speed: currentData.wind.speed,
+            wind_speed: item.wind?.speed || 0,
+            wind_speeds: [item.wind?.speed || 0],
             pop: item.pop || 0,
           };
         } else {
@@ -86,7 +87,17 @@ export const weatherAPI = {
             dailyMap[date].temp.max,
             item.main.temp,
           );
+          if (item.wind?.speed) {
+            dailyMap[date].wind_speeds.push(item.wind.speed);
+          }
         }
+      });
+
+      Object.keys(dailyMap).forEach((date) => {
+        const speeds = dailyMap[date].wind_speeds;
+        dailyMap[date].wind_speed =
+          speeds.reduce((a, b) => a + b, 0) / speeds.length;
+        delete dailyMap[date].wind_speeds;
       });
 
       transformedData.daily = Object.values(dailyMap).slice(0, 7);

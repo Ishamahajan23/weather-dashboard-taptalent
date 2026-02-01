@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { syncSettingsToFirestore } from "../firebase/firestore";
 
 const loadSettingsFromStorage = () => {
   try {
@@ -29,6 +30,17 @@ const saveSettingsToStorage = (settings) => {
   }
 };
 
+const syncToFirebase = async (settings, getState) => {
+  try {
+    const state = getState();
+    if (state.auth?.user?.uid) {
+      await syncSettingsToFirestore(state.auth.user.uid, settings);
+    }
+  } catch (error) {
+    console.error("Failed to sync settings to Firebase:", error);
+  }
+};
+
 const settingsSlice = createSlice({
   name: "settings",
   initialState: loadSettingsFromStorage(),
@@ -53,6 +65,12 @@ const settingsSlice = createSlice({
       Object.assign(state, action.payload);
       saveSettingsToStorage(state);
     },
+    loadSettingsFromCloud: (state, action) => {
+      if (action.payload) {
+        Object.assign(state, action.payload);
+        saveSettingsToStorage(state);
+      }
+    },
   },
 });
 
@@ -62,5 +80,36 @@ export const {
   setAutoRefresh,
   setRefreshInterval,
   updateSettings,
+  loadSettingsFromCloud,
 } = settingsSlice.actions;
+
+export const setTemperatureUnitAndSync =
+  (unit) => async (dispatch, getState) => {
+    dispatch(setTemperatureUnit(unit));
+    await syncToFirebase(getState().settings, getState);
+  };
+
+export const setThemeAndSync = (theme) => async (dispatch, getState) => {
+  dispatch(setTheme(theme));
+  await syncToFirebase(getState().settings, getState);
+};
+
+export const setAutoRefreshAndSync =
+  (autoRefresh) => async (dispatch, getState) => {
+    dispatch(setAutoRefresh(autoRefresh));
+    await syncToFirebase(getState().settings, getState);
+  };
+
+export const setRefreshIntervalAndSync =
+  (interval) => async (dispatch, getState) => {
+    dispatch(setRefreshInterval(interval));
+    await syncToFirebase(getState().settings, getState);
+  };
+
+export const updateSettingsAndSync =
+  (settings) => async (dispatch, getState) => {
+    dispatch(updateSettings(settings));
+    await syncToFirebase(getState().settings, getState);
+  };
+
 export default settingsSlice.reducer;
