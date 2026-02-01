@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { weatherAPI } from "./weatherAPI";
 
-const isStale = (timestamp) =>
-  !timestamp || Date.now() - timestamp > 60000;
+const isStale = (timestamp) => !timestamp || Date.now() - timestamp > 60000;
 
 export const fetchWeather = createAsyncThunk(
   "weather/fetchWeather",
-  async ({ city, unit }, { getState }) => {
+  async ({ city }, { getState }) => {
     const cached = getState().weather.current[city];
     if (cached && !isStale(cached.lastUpdated)) {
       return { city, data: cached.data, cached: true };
@@ -14,7 +13,7 @@ export const fetchWeather = createAsyncThunk(
 
     const data = await weatherAPI.getCurrentWeather(city);
     return { city, data };
-  }
+  },
 );
 
 export const fetchDetailedWeather = createAsyncThunk(
@@ -27,7 +26,7 @@ export const fetchDetailedWeather = createAsyncThunk(
 
     const data = await weatherAPI.getDetailedWeather(lat, lon);
     return { city, data };
-  }
+  },
 );
 
 export const searchCities = createAsyncThunk(
@@ -35,7 +34,7 @@ export const searchCities = createAsyncThunk(
   async (query) => {
     const data = await weatherAPI.searchCities(query);
     return data;
-  }
+  },
 );
 
 const weatherSlice = createSlice({
@@ -46,12 +45,32 @@ const weatherSlice = createSlice({
     searchResults: [],
     status: "idle",
     searchStatus: "idle",
-    error: null
+    error: null,
   },
   reducers: {
     clearSearchResults: (state) => {
       state.searchResults = [];
-    }
+    },
+    forceRefreshWeather: (state, action) => {
+      const city = action.payload;
+      if (city) {
+        // Clear cache for specific city
+        if (state.current[city]) {
+          state.current[city].lastUpdated = 0;
+        }
+        if (state.detailed[city]) {
+          state.detailed[city].lastUpdated = 0;
+        }
+      } else {
+        // Clear all cache
+        Object.keys(state.current).forEach((key) => {
+          state.current[key].lastUpdated = 0;
+        });
+        Object.keys(state.detailed).forEach((key) => {
+          state.detailed[key].lastUpdated = 0;
+        });
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -62,7 +81,7 @@ const weatherSlice = createSlice({
         const { city, data } = action.payload;
         state.current[city] = {
           data,
-          lastUpdated: Date.now()
+          lastUpdated: Date.now(),
         };
         state.status = "success";
       })
@@ -74,7 +93,7 @@ const weatherSlice = createSlice({
         const { city, data } = action.payload;
         state.detailed[city] = {
           data,
-          lastUpdated: Date.now()
+          lastUpdated: Date.now(),
         };
       })
       .addCase(searchCities.pending, (state) => {
@@ -88,8 +107,8 @@ const weatherSlice = createSlice({
         state.searchStatus = "error";
         state.error = action.error.message;
       });
-  }
+  },
 });
 
-export const { clearSearchResults } = weatherSlice.actions;
+export const { clearSearchResults, forceRefreshWeather } = weatherSlice.actions;
 export default weatherSlice.reducer;

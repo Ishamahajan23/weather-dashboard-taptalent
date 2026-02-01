@@ -1,34 +1,36 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const loadSettingsFromStorage = () => {
   try {
-    const storedSettings = localStorage.getItem('weatherSettings');
-    return storedSettings ? JSON.parse(storedSettings) : {
-      temperatureUnit: 'C',
-      theme: 'light',
-      autoRefresh: true,
-      refreshInterval: 60
-    };
+    const storedSettings = localStorage.getItem("weatherSettings");
+    return storedSettings
+      ? JSON.parse(storedSettings)
+      : {
+          temperatureUnit: "C",
+          theme: "dark",
+          autoRefresh: true,
+          refreshInterval: 60,
+        };
   } catch (error) {
     return {
-      temperatureUnit: 'C',
-      theme: 'light',
+      temperatureUnit: "C",
+      theme: "dark",
       autoRefresh: true,
-      refreshInterval: 60
+      refreshInterval: 60,
     };
   }
 };
 
 const saveSettingsToStorage = (settings) => {
   try {
-    localStorage.setItem('weatherSettings', JSON.stringify(settings));
+    localStorage.setItem("weatherSettings", JSON.stringify(settings));
   } catch (error) {
-    console.error('Failed to save settings to localStorage:', error);
+    console.error("Failed to save settings to localStorage:", error);
   }
 };
 
 const settingsSlice = createSlice({
-  name: 'settings',
+  name: "settings",
   initialState: loadSettingsFromStorage(),
   reducers: {
     setTemperatureUnit: (state, action) => {
@@ -50,15 +52,15 @@ const settingsSlice = createSlice({
     updateSettings: (state, action) => {
       Object.assign(state, action.payload);
       saveSettingsToStorage(state);
-    }
-  }
+    },
+  },
 });
 
-export const { 
-  setTemperatureUnit, 
-  setTheme, 
-  setAutoRefresh, 
-  setRefreshInterval, 
-  updateSettings 
+export const {
+  setTemperatureUnit,
+  setTheme,
+  setAutoRefresh,
+  setRefreshInterval,
+  updateSettings,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;
