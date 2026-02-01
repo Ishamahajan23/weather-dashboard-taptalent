@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Heart } from "lucide-react";
+import { CalendarIcon, Clock, Heart, TimerIcon } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -83,35 +83,84 @@ const CityDetails = () => {
   const formatChartData = () => {
     if (!cityWeatherData) return { hourly: [], daily: [] };
 
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
     const hourlyData =
-      cityWeatherData.hourly?.slice(0, 24).map((hour, index) => ({
-        time:
-          new Date(
-            (hour.dt || Date.now() / 1000 + index * 3600) * 1000,
-          ).getHours() + ":00",
-        temperature: formatTemperature(hour.temp, temperatureUnit),
-        humidity: Math.floor(Math.random() * 30) + 40,
-        precipitation: Math.round((hour.pop || Math.random()) * 100),
-        icon: hour.weather?.[0]?.icon || "01d",
-      })) || [];
+      cityWeatherData.hourly?.slice(0, 24).map((hour, index) => {
+        const hourDate = new Date(
+          (hour.dt || Date.now() / 1000 + index * 3600) * 1000,
+        );
+        const isToday = hourDate.toDateString() === today.toDateString();
+        const isTomorrow = hourDate.toDateString() === new Date(today.getTime() + 24 * 60 * 60 * 1000).toDateString();
+        
+        let timeLabel;
+        if (isToday) {
+          timeLabel = hourDate.getHours() + ":00";
+        } else if (isTomorrow) {
+          timeLabel = "Tmr " + hourDate.getHours() + ":00";
+        } else {
+          timeLabel = hourDate.toLocaleDateString("en", { month: "short", day: "numeric" }) + " " + hourDate.getHours() + ":00";
+        }
+        
+        return {
+          time: timeLabel,
+          fullDate: hourDate.toLocaleString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }),
+          temperature: formatTemperature(hour.temp, temperatureUnit),
+          humidity: Math.floor(Math.random() * 30) + 40,
+          precipitation: Math.round((hour.pop || Math.random()) * 100),
+          uvIndex: hour.uvi || Math.floor(Math.random() * 8) + 1,
+          icon: hour.weather?.[0]?.icon || "01d",
+        };
+      }) || [];
 
     const dailyData =
-      cityWeatherData.daily?.map((day, index) => ({
-        day: new Date(
+      cityWeatherData.daily?.map((day, index) => {
+        const dayDate = new Date(
           (day.dt || Date.now() / 1000 + index * 24 * 3600) * 1000,
-        ).toLocaleDateString("en", { weekday: "short" }),
-        high: formatTemperature(
-          day.temp?.max || day.temp?.day || 25,
-          temperatureUnit,
-        ),
-        low: formatTemperature(
-          day.temp?.min || day.temp?.day || 15,
-          temperatureUnit,
-        ),
-        humidity: day.humidity || Math.floor(Math.random() * 30) + 40,
-        windSpeed: Math.round((day.wind_speed || Math.random() * 5) * 10) / 10,
-        precipitation: Math.round((day.pop || Math.random()) * 100),
-      })) || [];
+        );
+        
+        let dayLabel;
+        if (index === 0) {
+          dayLabel = "Today";
+        } else if (index === 1) {
+          dayLabel = "Tomorrow";
+        } else {
+          dayLabel = dayDate.toLocaleDateString("en", { 
+            weekday: "short",
+            month: "short",
+            day: "numeric"
+          });
+        }
+        
+        return {
+          day: dayLabel,
+          fullDate: dayDate.toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+          high: formatTemperature(
+            day.temp?.max || day.temp?.day || 25,
+            temperatureUnit,
+          ),
+          low: formatTemperature(
+            day.temp?.min || day.temp?.day || 15,
+            temperatureUnit,
+          ),
+          humidity: day.humidity || Math.floor(Math.random() * 30) + 40,
+          windSpeed: Math.round((day.wind_speed || Math.random() * 5) * 10) / 10,
+          precipitation: Math.round((day.pop || Math.random()) * 100),
+        };
+      }) || [];
 
     return { hourly: hourlyData, daily: dailyData };
   };
@@ -399,7 +448,7 @@ const CityDetails = () => {
           >
             <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xl">🕐</span>
+                <span className="text-xl"><Clock className={`w-5 h-5 ${isDark ? "text-white" : "text-gray-900"}`} /></span>
                 <p
                   className={`text-sm sm:text-base font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
                 >
@@ -446,7 +495,7 @@ const CityDetails = () => {
           >
             <button
               onClick={() => setSelectedView("hourly")}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base  flex items-center gap-2 ${
                 selectedView === "hourly"
                   ? isDark
                     ? "bg-blue-600 text-white shadow-lg"
@@ -456,11 +505,11 @@ const CityDetails = () => {
                     : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              📊 Hourly (24h)
+              <TimerIcon className="h-4 w-4" /> Hourly (24h)
             </button>
             <button
               onClick={() => setSelectedView("daily")}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base flex items-center gap-2 ${
                 selectedView === "daily"
                   ? isDark
                     ? "bg-blue-600 text-white shadow-lg"
@@ -470,7 +519,7 @@ const CityDetails = () => {
                     : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              📅 Daily (7 days)
+              <CalendarIcon className="h-4 w-4" /> Daily (7 days)
             </button>
           </div>
         </div>
@@ -513,6 +562,12 @@ const CityDetails = () => {
                       `${value}°${temperatureUnit}`,
                       "Temperature",
                     ]}
+                    labelFormatter={(label, payload) => {
+                      if (payload && payload[0] && payload[0].payload.fullDate) {
+                        return payload[0].payload.fullDate;
+                      }
+                      return label;
+                    }}
                     contentStyle={{
                       backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
                       border: `1px solid ${isDark ? "#374151" : "#E5E7EB"}`,
@@ -547,10 +602,16 @@ const CityDetails = () => {
                     style={{ fontSize: "12px" }}
                   />
                   <Tooltip
-                    formatter={(value) => [
+                    formatter={(value, name) => [
                       `${value}°${temperatureUnit}`,
-                      "Temperature",
+                      name === "high" ? "High Temp" : "Low Temp",
                     ]}
+                    labelFormatter={(label, payload) => {
+                      if (payload && payload[0] && payload[0].payload.fullDate) {
+                        return payload[0].payload.fullDate;
+                      }
+                      return label;
+                    }}
                     contentStyle={{
                       backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
                       border: `1px solid ${isDark ? "#374151" : "#E5E7EB"}`,
@@ -610,7 +671,13 @@ const CityDetails = () => {
                   style={{ fontSize: "12px" }}
                 />
                 <Tooltip
-                  formatter={(value) => [`${value}%`, "Precipitation"]}
+                  formatter={(value) => [`${value}%`, "Precipitation Chance"]}
+                  labelFormatter={(label, payload) => {
+                    if (payload && payload[0] && payload[0].payload.fullDate) {
+                      return payload[0].payload.fullDate;
+                    }
+                    return label;
+                  }}
                   contentStyle={{
                     backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
                     border: `1px solid ${isDark ? "#374151" : "#E5E7EB"}`,
@@ -661,7 +728,13 @@ const CityDetails = () => {
                   style={{ fontSize: "12px" }}
                 />
                 <Tooltip
-                  formatter={(value) => [`${value}%`, "Humidity"]}
+                  formatter={(value) => [`${value}%`, "Humidity Level"]}
+                  labelFormatter={(label, payload) => {
+                    if (payload && payload[0] && payload[0].payload.fullDate) {
+                      return payload[0].payload.fullDate;
+                    }
+                    return label;
+                  }}
                   contentStyle={{
                     backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
                     border: `1px solid ${isDark ? "#374151" : "#E5E7EB"}`,
@@ -680,21 +753,21 @@ const CityDetails = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Wind Speed Chart */}
-          <div
-            className={`rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 ${
-              isDark ? "bg-gray-800/90" : "bg-white"
-            }`}
-          >
-            <h3
-              className={`text-lg sm:text-xl font-bold mb-4 ${
-                isDark ? "text-white" : "text-gray-900"
+          {/* Wind Speed Chart - Only available for Daily view */}
+          {selectedView === "daily" ? (
+            <div
+              className={`rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 ${
+                isDark ? "bg-gray-800/90" : "bg-white"
               }`}
             >
-              Wind Speed {selectedView === "daily" && "(m/s)"}
-            </h3>
-            <ResponsiveContainer width="100%" height={250}>
-              {selectedView === "daily" ? (
+              <h3
+                className={`text-lg sm:text-xl font-bold mb-4 ${
+                  isDark ? "text-white" : "text-gray-900"
+                }`}
+              >
+                Wind Speed (m/s)
+              </h3>
+              <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={daily}>
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -710,6 +783,13 @@ const CityDetails = () => {
                     style={{ fontSize: "12px" }}
                   />
                   <Tooltip
+                    formatter={(value) => [`${value} m/s`, "Wind Speed"]}
+                    labelFormatter={(label, payload) => {
+                      if (payload && payload[0] && payload[0].payload.fullDate) {
+                        return payload[0].payload.fullDate;
+                      }
+                      return label;
+                    }}
                     contentStyle={{
                       backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
                       border: `1px solid ${isDark ? "#374151" : "#E5E7EB"}`,
@@ -729,17 +809,72 @@ const CityDetails = () => {
                     }}
                   />
                 </LineChart>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p
-                    className={`text-center ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    Wind speed data available in daily view
-                  </p>
-                </div>
-              )}
-            </ResponsiveContainer>
-          </div>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            /* UV Index Chart - Available for Hourly view */
+            <div
+              className={`rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 ${
+                isDark ? "bg-gray-800/90" : "bg-white"
+              }`}
+            >
+              <h3
+                className={`text-lg sm:text-xl font-bold mb-4 ${
+                  isDark ? "text-white" : "text-gray-900"
+                }`}
+              >
+                UV Index Trend
+              </h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={hourly.slice(0, 12)}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={isDark ? "#374151" : "#E5E7EB"}
+                  />
+                  <XAxis
+                    dataKey="time"
+                    stroke={isDark ? "#9CA3AF" : "#6B7280"}
+                    style={{ fontSize: "12px" }}
+                  />
+                  <YAxis
+                    stroke={isDark ? "#9CA3AF" : "#6B7280"}
+                    style={{ fontSize: "12px" }}
+                  />
+                  <Tooltip
+                    formatter={(value) => {
+                      let level = "Low";
+                      if (value >= 8) level = "Very High";
+                      else if (value >= 6) level = "High";
+                      else if (value >= 3) level = "Moderate";
+                      return [`${value} (${level})`, "UV Index"];
+                    }}
+                    labelFormatter={(label, payload) => {
+                      if (payload && payload[0] && payload[0].payload.fullDate) {
+                        return payload[0].payload.fullDate;
+                      }
+                      return label;
+                    }}
+                    contentStyle={{
+                      backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
+                      border: `1px solid ${isDark ? "#374151" : "#E5E7EB"}`,
+                      borderRadius: "8px",
+                      color: isDark ? "#FFFFFF" : "#111827",
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="uvIndex"
+                    stroke={isDark ? "#FBBF24" : "#F59E0B"}
+                    strokeWidth={3}
+                    dot={{
+                      fill: isDark ? "#FBBF24" : "#F59E0B",
+                      strokeWidth: 2,
+                    }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
       </div>
     </div>
