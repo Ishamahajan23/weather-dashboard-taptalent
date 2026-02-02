@@ -54,7 +54,6 @@ function App() {
           : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
       }`}
     >
-      {/* Animated background elements */}
       <div
         className={`absolute inset-0 transition-opacity duration-500 ${
           isDark

@@ -148,8 +148,6 @@ export const formatTemperature = (temp, unit = "C") => {
 };
 
 export const getWeatherIcon = (iconCode) => {
-  // Map OpenWeatherMap codes to amCharts weather icons
-  // Using animated SVG icons from public/amcharts_weather_icons_1.0.0/animated/
   const iconMap = {
     "01d": { icon: "day.svg", name: "Clear Sky" },
     "01n": { icon: "night.svg", name: "Clear Night" },

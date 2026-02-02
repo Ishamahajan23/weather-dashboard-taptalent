@@ -105,7 +105,6 @@ const Dashboard = () => {
 
   const currentCity = favoriteCities[currentIndex];
 
-  // Capitalize city name function
   const capitalizeCity = (city) => {
     return city
       .split(" ")
@@ -116,7 +115,6 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
-        {/* Improved Header */}
         <div className="text-center mb-6 sm:mb-8 md:mb-10">
           <div
             className={`inline-block mb-4 sm:mb-6 p-3 sm:p-4 rounded-2xl sm:rounded-3xl backdrop-blur-xl border-2 shadow-2xl transition-all duration-300 ${
@@ -147,7 +145,6 @@ const Dashboard = () => {
           <SearchBar onCitySelect={handleCitySelect} />
         </div>
 
-        {/* Horizontal Card Slider - Mobile Only */}
         <div className="lg:hidden mb-6 sm:mb-8 mt-4">
           <div className="overflow-x-auto custom-scrollbar pb-4 -mx-3 px-3">
             <div className="flex space-x-3 sm:space-x-4 pt-2">
@@ -233,7 +230,6 @@ const Dashboard = () => {
                 </div>
               ))}
 
-              {/* Add City Card */}
               <div
                 onClick={() =>
                   document.querySelector('input[type="text"]')?.focus()
@@ -264,7 +260,6 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-          {/* Main Weather Display */}
           <div className="lg:col-span-2">
             {favoriteCities.length > 0 && currentCity ? (
               <div className="space-y-8">
@@ -371,7 +366,6 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Favorite Cities List - Desktop Only */}
           <div className="lg:col-span-1 hidden lg:block">
             <div
               className={`backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 border-2 sticky top-20 transition-colors overflow-hidden ${
@@ -480,7 +474,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Snackbar Notifications */}
       <Snackbar
         message={snackbar.message}
         type={snackbar.type}

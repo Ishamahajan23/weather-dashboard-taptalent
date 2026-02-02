@@ -80,7 +80,6 @@ const AuthModal = ({ isOpen, onClose }) => {
             : "bg-white/95 border-gray-200/50"
         }`}
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           className={`absolute top-4 right-4 p-2 rounded-lg transition-all ${
@@ -95,7 +94,6 @@ const AuthModal = ({ isOpen, onClose }) => {
         <div className="p-6 sm:p-8">
           {!isAuthenticated ? (
             <>
-              {/* Sign In View */}
               <div className="text-center mb-6">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                   <LogIn className="w-8 h-8 text-white" />
@@ -163,7 +161,6 @@ const AuthModal = ({ isOpen, onClose }) => {
             </>
           ) : (
             <>
-              {/* Signed In View */}
               <div className="text-center mb-6">
                 <div className="relative w-20 h-20 mx-auto mb-4">
                   {user?.photoURL ? (

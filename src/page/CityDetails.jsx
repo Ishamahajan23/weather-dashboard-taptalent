@@ -41,7 +41,7 @@ const CityDetails = () => {
   const decodedCityName = decodeURIComponent(cityName);
   const isFavorite = favoriteCities.includes(decodedCityName);
   const cityWeatherData = detailedWeather[decodedCityName]?.data;
-  const [selectedView, setSelectedView] = useState("hourly"); // 'hourly' or 'daily'
+  const [selectedView, setSelectedView] = useState("hourly");
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const CityDetails = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());
-    }, 60000); // Update every minute
+    }, 60000);
 
     return () => clearInterval(timer);
   }, []);
@@ -92,17 +92,26 @@ const CityDetails = () => {
           (hour.dt || Date.now() / 1000 + index * 3600) * 1000,
         );
         const isToday = hourDate.toDateString() === today.toDateString();
-        const isTomorrow = hourDate.toDateString() === new Date(today.getTime() + 24 * 60 * 60 * 1000).toDateString();
-        
+        const isTomorrow =
+          hourDate.toDateString() ===
+          new Date(today.getTime() + 24 * 60 * 60 * 1000).toDateString();
+
         let timeLabel;
         if (isToday) {
           timeLabel = hourDate.getHours() + ":00";
         } else if (isTomorrow) {
           timeLabel = "Tmr " + hourDate.getHours() + ":00";
         } else {
-          timeLabel = hourDate.toLocaleDateString("en", { month: "short", day: "numeric" }) + " " + hourDate.getHours() + ":00";
+          timeLabel =
+            hourDate.toLocaleDateString("en", {
+              month: "short",
+              day: "numeric",
+            }) +
+            " " +
+            hourDate.getHours() +
+            ":00";
         }
-        
+
         return {
           time: timeLabel,
           fullDate: hourDate.toLocaleString("en-US", {
@@ -126,20 +135,20 @@ const CityDetails = () => {
         const dayDate = new Date(
           (day.dt || Date.now() / 1000 + index * 24 * 3600) * 1000,
         );
-        
+
         let dayLabel;
         if (index === 0) {
           dayLabel = "Today";
         } else if (index === 1) {
           dayLabel = "Tomorrow";
         } else {
-          dayLabel = dayDate.toLocaleDateString("en", { 
+          dayLabel = dayDate.toLocaleDateString("en", {
             weekday: "short",
             month: "short",
-            day: "numeric"
+            day: "numeric",
           });
         }
-        
+
         return {
           day: dayLabel,
           fullDate: dayDate.toLocaleDateString("en-US", {
@@ -157,7 +166,8 @@ const CityDetails = () => {
             temperatureUnit,
           ),
           humidity: day.humidity || Math.floor(Math.random() * 30) + 40,
-          windSpeed: Math.round((day.wind_speed || Math.random() * 5) * 10) / 10,
+          windSpeed:
+            Math.round((day.wind_speed || Math.random() * 5) * 10) / 10,
           precipitation: Math.round((day.pop || Math.random()) * 100),
         };
       }) || [];
@@ -250,7 +260,6 @@ const CityDetails = () => {
       className={`min-h-screen ${isDark ? "bg-gray-900" : "bg-linear-to-br from-blue-50 to-indigo-100"}`}
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
-        {/* Header - Responsive */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
             <Link
@@ -303,7 +312,6 @@ const CityDetails = () => {
           </button>
         </div>
 
-        {/* Current Weather Card - Responsive */}
         <div
           className={`backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 border-2 ${
             isDark
@@ -436,9 +444,7 @@ const CityDetails = () => {
           </div>
         </div>
 
-        {/* View Selector - Hourly/Daily */}
         <div className="flex flex-col items-center mb-6 sm:mb-8 gap-3">
-          {/* Current Date/Time Display */}
           <div
             className={`text-center px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl backdrop-blur-md border shadow-lg ${
               isDark
@@ -448,7 +454,11 @@ const CityDetails = () => {
           >
             <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xl"><Clock className={`w-5 h-5 ${isDark ? "text-white" : "text-gray-900"}`} /></span>
+                <span className="text-xl">
+                  <Clock
+                    className={`w-5 h-5 ${isDark ? "text-white" : "text-gray-900"}`}
+                  />
+                </span>
                 <p
                   className={`text-sm sm:text-base font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
                 >
@@ -524,9 +534,7 @@ const CityDetails = () => {
           </div>
         </div>
 
-        {/* Charts Grid - Responsive */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
-          {/* Temperature Chart */}
           <div
             className={`rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 ${
               isDark ? "bg-gray-800/90" : "bg-white"
@@ -563,7 +571,11 @@ const CityDetails = () => {
                       "Temperature",
                     ]}
                     labelFormatter={(label, payload) => {
-                      if (payload && payload[0] && payload[0].payload.fullDate) {
+                      if (
+                        payload &&
+                        payload[0] &&
+                        payload[0].payload.fullDate
+                      ) {
                         return payload[0].payload.fullDate;
                       }
                       return label;
@@ -607,7 +619,11 @@ const CityDetails = () => {
                       name === "high" ? "High Temp" : "Low Temp",
                     ]}
                     labelFormatter={(label, payload) => {
-                      if (payload && payload[0] && payload[0].payload.fullDate) {
+                      if (
+                        payload &&
+                        payload[0] &&
+                        payload[0].payload.fullDate
+                      ) {
                         return payload[0].payload.fullDate;
                       }
                       return label;
@@ -640,7 +656,6 @@ const CityDetails = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Precipitation Chart */}
           <div
             className={`rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 ${
               isDark ? "bg-gray-800/90" : "bg-white"
@@ -695,9 +710,7 @@ const CityDetails = () => {
           </div>
         </div>
 
-        {/* Additional Charts Row */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-          {/* Humidity Chart */}
           <div
             className={`rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 ${
               isDark ? "bg-gray-800/90" : "bg-white"
@@ -753,7 +766,6 @@ const CityDetails = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Wind Speed Chart - Only available for Daily view */}
           {selectedView === "daily" ? (
             <div
               className={`rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 ${
@@ -785,7 +797,11 @@ const CityDetails = () => {
                   <Tooltip
                     formatter={(value) => [`${value} m/s`, "Wind Speed"]}
                     labelFormatter={(label, payload) => {
-                      if (payload && payload[0] && payload[0].payload.fullDate) {
+                      if (
+                        payload &&
+                        payload[0] &&
+                        payload[0].payload.fullDate
+                      ) {
                         return payload[0].payload.fullDate;
                       }
                       return label;
@@ -812,7 +828,6 @@ const CityDetails = () => {
               </ResponsiveContainer>
             </div>
           ) : (
-            /* UV Index Chart - Available for Hourly view */
             <div
               className={`rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 ${
                 isDark ? "bg-gray-800/90" : "bg-white"
@@ -849,7 +864,11 @@ const CityDetails = () => {
                       return [`${value} (${level})`, "UV Index"];
                     }}
                     labelFormatter={(label, payload) => {
-                      if (payload && payload[0] && payload[0].payload.fullDate) {
+                      if (
+                        payload &&
+                        payload[0] &&
+                        payload[0].payload.fullDate
+                      ) {
                         return payload[0].payload.fullDate;
                       }
                       return label;

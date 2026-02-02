@@ -58,7 +58,6 @@ const WeatherCard = ({ city, weatherData }) => {
         }`}
       >
         <div className="p-4 sm:p-6 md:p-8 lg:p-10">
-          {/* Header Section */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
             <div className="flex-1 w-full sm:w-auto">
               <h3
@@ -82,7 +81,6 @@ const WeatherCard = ({ city, weatherData }) => {
 
           <div className="flex items-center justify-center mb-6 sm:mb-8">
             <div className="text-center w-full">
-              {/* Weather Icon - WMO Standard Icons */}
               <div className="mb-4 flex justify-center">
                 <div className="relative animate-float">
                   <img
@@ -97,7 +95,6 @@ const WeatherCard = ({ city, weatherData }) => {
                 </div>
               </div>
 
-              {/* Temperature Display - Perfectly aligned */}
               <div className="flex items-center justify-center gap-1">
                 <span
                   className={`text-5xl sm:text-6xl md:text-7xl font-bold leading-none ${
@@ -119,7 +116,6 @@ const WeatherCard = ({ city, weatherData }) => {
             </div>
           </div>
 
-          {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-5">
             <div
               className={`backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-5 border transition-all duration-200 hover:scale-105 hover:shadow-lg ${
@@ -227,7 +223,6 @@ const WeatherCard = ({ city, weatherData }) => {
           </div>
         </div>
 
-        {/* Bottom CTA */}
         <div
           className={`backdrop-blur-sm px-4 sm:px-8 py-3 sm:py-4 border-t ${
             isDark

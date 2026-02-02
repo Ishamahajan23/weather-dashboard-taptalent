@@ -80,7 +80,6 @@ const Navbar = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo/Brand */}
             <div className="flex items-center space-x-2 sm:space-x-4">
               <h1
                 className={`text-lg sm:text-xl font-bold drop-shadow-lg transition-colors ${
@@ -90,7 +89,6 @@ const Navbar = () => {
                 🌤️ <span className="hidden xs:inline">WeatherApp</span>
               </h1>
 
-              {/* Desktop Navigation */}
               <div className="hidden md:flex space-x-2 lg:space-x-4">
                 {navItems.map((item) => (
                   <Link
@@ -113,9 +111,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Desktop Controls */}
             <div className="hidden md:flex items-center space-x-2 lg:space-x-3">
-              {/* Auth Button */}
               <button
                 onClick={() => setIsAuthModalOpen(true)}
                 className={`p-2.5 rounded-full transition-all duration-300 hover:scale-110 relative ${
@@ -149,7 +145,6 @@ const Navbar = () => {
                 )}
               </button>
 
-              {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
                 className={`p-2.5 rounded-full transition-all duration-300 hover:scale-110 ${
@@ -166,7 +161,6 @@ const Navbar = () => {
                 )}
               </button>
 
-              {/* Temperature Unit Toggle */}
               <button
                 onClick={toggleTemperatureUnit}
                 className={`backdrop-blur-sm px-3 py-1.5 rounded-full border transition-all duration-300 hover:scale-105 cursor-pointer ${
@@ -188,7 +182,6 @@ const Navbar = () => {
                 </span>
               </button>
 
-              {/* Last Updated & Refresh */}
               <div
                 className={`flex items-center space-x-2 backdrop-blur-sm px-3 py-1.5 rounded-full border ${
                   isDark
@@ -228,9 +221,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Mobile Controls */}
             <div className="flex md:hidden items-center space-x-2">
-              {/* Auth Button - Mobile */}
               <button
                 onClick={() => setIsAuthModalOpen(true)}
                 className={`p-2 rounded-full transition-all duration-300 relative ${
@@ -264,7 +255,6 @@ const Navbar = () => {
                 )}
               </button>
 
-              {/* Theme Toggle - Mobile */}
               <button
                 onClick={toggleTheme}
                 className={`p-2 rounded-full transition-all duration-300 ${
@@ -281,7 +271,6 @@ const Navbar = () => {
                 )}
               </button>
 
-              {/* Refresh Button - Mobile */}
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
@@ -297,7 +286,6 @@ const Navbar = () => {
                 <RefreshCw className="w-5 h-5" />
               </button>
 
-              {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className={`p-2 rounded-full transition-all duration-300 ${
@@ -318,7 +306,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
         <div
           className={`md:hidden backdrop-blur-md border-b shadow-lg transition-all duration-300 sticky top-16 z-40 ${
@@ -328,7 +315,6 @@ const Navbar = () => {
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
-            {/* Navigation Links */}
             <div className="space-y-2">
               {navItems.map((item) => (
                 <Link
@@ -351,7 +337,6 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Temperature Unit Toggle */}
             <div
               className={`flex items-center justify-between p-3 rounded-lg border ${
                 isDark
@@ -380,7 +365,6 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Last Updated */}
             <div
               className={`flex items-center justify-between p-3 rounded-lg border ${
                 isDark
@@ -406,7 +390,6 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
